@@ -1,0 +1,240 @@
+/**
+ * ASTRAINA 3D Folio & Luxury Interface Design System
+ * Architecture: $500k Luxury Grade (Two-Faced 180deg Flip)
+ * Version: 9.4.2
+ */
+
+:root {
+    --ast-color-obsidian: #020408;
+    --ast-color-glass-bg: rgba(8, 14, 26, 0.72);
+    --ast-color-glass-border: rgba(245, 158, 11, 0.22);
+    --ast-color-glass-hover: rgba(245, 158, 11, 0.35);
+    
+    --ast-gold-dark: #B45309;
+    --ast-gold-main: #F59E0B;
+    --ast-gold-bright: #FBBF24;
+    --ast-gold-light: #FEF3C7;
+    
+    --ast-ruby-core: #E11D48;
+    --ast-ruby-glow: rgba(225, 29, 72, 0.45);
+    
+    --ast-cyan-ephem: #38BDF8;
+    --ast-text-primary: #F8FAFC;
+    --ast-text-secondary: #94A3B8;
+    --ast-text-muted: #64748B;
+    
+    --ast-font-title: 'Cinzel', Georgia, serif;
+    --ast-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --ast-font-mono: 'Space Mono', monospace;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--ast-color-obsidian);
+    color: var(--ast-text-primary);
+    font-family: var(--ast-font-sans);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ЗАПРЕТ НА ПАРАЗИТНЫЕ БОКОВЫЕ МАСКИ */
+body::before, body::after,
+.ast-obsidian-body::before, .ast-obsidian-body::after,
+.ast-folio-overlay:not(.ast-turning-active) {
+    display: none !important;
+    content: none !important;
+    pointer-events: none !important;
+}
+
+.ast-canvas-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.ast-folio-container {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: auto;
+}
+
+/* 3D-Оверлей фолианта (активен строго во время анимации) */
+.ast-folio-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    pointer-events: none;
+    perspective: 2600px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 4, 8, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.ast-folio-overlay.ast-turning-active {
+    display: flex !important;
+    pointer-events: auto !important;
+}
+
+.ast-folio-turning-leaf {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg);
+    will-change: transform;
+}
+
+.ast-leaf-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: linear-gradient(135deg, rgba(8, 14, 26, 0.98) 0%, rgba(2, 4, 8, 0.99) 100%);
+    border: 1px solid var(--ast-color-glass-border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+}
+
+.ast-leaf-front {
+    transform: rotateY(0deg);
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.ast-leaf-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(-135deg, rgba(8, 14, 26, 0.98) 0%, rgba(2, 4, 8, 0.99) 100%);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.ast-leaf-gold-edge {
+    position: absolute;
+    top: 0;
+    right: -2px;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--ast-gold-dark) 0%, var(--ast-gold-light) 50%, var(--ast-gold-main) 100%);
+    box-shadow: 0 0 15px var(--ast-gold-bright), 0 0 30px var(--ast-gold-main);
+}
+
+.ast-leaf-gold-edge-back {
+    position: absolute;
+    top: 0;
+    left: -2px;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--ast-gold-dark) 0%, var(--ast-gold-light) 50%, var(--ast-gold-main) 100%);
+    box-shadow: 0 0 15px var(--ast-gold-bright), 0 0 30px var(--ast-gold-main);
+}
+
+/* РАЗВОРОТ МОДУЛЕЙ КНИГИ */
+.ast-main-viewport {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+}
+
+.ast-module-stage {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.ast-book-spread {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    perspective: 2500px;
+}
+
+.ast-folio-page {
+    position: relative;
+    background: var(--ast-color-glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--ast-color-glass-border);
+    border-radius: 12px;
+    padding: 36px 40px;
+    min-height: 640px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+    transition: border-color 0.3s ease;
+}
+
+.ast-folio-page:hover {
+    border-color: var(--ast-color-glass-hover);
+}
+
+.ast-page-decor-corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: var(--ast-gold-main);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.ast-corner-tl { top: 8px; left: 8px; border-top: 1px solid; border-left: 1px solid; }
+.ast-corner-bl { bottom: 8px; left: 8px; border-bottom: 1px solid; border-left: 1px solid; }
+.ast-corner-tr { top: 8px; right: 8px; border-top: 1px solid; border-right: 1px solid; }
+.ast-corner-br { bottom: 8px; right: 8px; border-bottom: 1px solid; border-right: 1px solid; }
+
+.ast-gold-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0 24px 0;
+}
+
+.ast-gold-divider::before,
+.ast-gold-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ast-color-glass-border), transparent);
+}
+
+.ast-gold-divider span {
+    color: var(--ast-gold-bright);
+    font-size: 0.8rem;
+}
+
+@media (max-width: 1024px) {
+    .ast-book-spread {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .ast-folio-page {
+        min-height: auto;
+        padding: 24px 20px;
+    }
+}

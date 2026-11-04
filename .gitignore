@@ -1,0 +1,4 @@
+git-setup.php
+backups_*
+*.bak
+.DS_Store
